@@ -138,10 +138,11 @@ void GameScene::makeField()
     Size winSize = Director::getInstance()->getWinSize();
     for (int row = 0; row < FIELD_HEIGHT; row++) {
         for (int col = 0; col <= FIELD_WIDTH_RIGHT_INDEX - FIELD_WIDTH_LEFT_INDEX; col++) {
-        	Label* b = Label::createWithTTF("□", "fonts/Arial.ttf", 50.0);
-			b->setPosition(Point(winSize.width * (0.30 + col * 0.05), winSize.height * (0.05 + row * 0.03)));
-			b->setColor(Color3B(128, 128, 128));
-            this->addChild(b);
+        	//Label* b = Label::createWithTTF("□", "fonts/Arial.ttf", 50.0);
+        	Sprite* gridcube = Sprite::create("ic_grid_cube.png");
+        	gridcube->setPosition(Point(winSize.width * (0.30 + col * 0.05), winSize.height * (0.05 + row * 0.03)));
+			//b->setColor(Color3B(128, 128, 128));
+            this->addChild(gridcube);
         }
     }
 }
@@ -232,6 +233,8 @@ void GameScene::deleteLines()
                 }
             }
         }
+
+
     }
 }
 
