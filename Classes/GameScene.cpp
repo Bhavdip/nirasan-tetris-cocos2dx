@@ -64,7 +64,7 @@ void GameScene::makeControlButton()
     
     Label* moveLeftLabel = Label::createWithTTF("Left", "fonts/Arial.ttf", GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* moveLeft = MenuItemLabel::create(moveLeftLabel,CC_CALLBACK_0(GameScene::tapMoveLeft,this));
-    moveLeft->setPosition(winSize.width * 0.2, winSize.height * 0.2);
+    moveLeft->setPosition(winSize.width * 0.4, winSize.height * 0.2);
     
     Label* moveRightLabel = Label::createWithTTF("Right", "fonts/Arial.ttf", GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* moveRight = MenuItemLabel::create(moveRightLabel,CC_CALLBACK_0(GameScene::tapMoveRight,this));
@@ -72,23 +72,34 @@ void GameScene::makeControlButton()
 
     Label* turnLeftLabel = Label::createWithTTF("TLeft", "fonts/Arial.ttf", GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* turnLeft = MenuItemLabel::create(turnLeftLabel,CC_CALLBACK_0(GameScene::tapTurnLeft,this));
-    turnLeft->setPosition(winSize.width * 0.2, winSize.height * 0.05);
+    turnLeft->setPosition(winSize.width * 0.4, winSize.height * 0.05);
     
     Label* turnRightLabel = Label::createWithTTF("TRight", "fonts/Arial.ttf", GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* turnRight = MenuItemLabel::create(turnRightLabel,CC_CALLBACK_0(GameScene::tapTurnRight,this));
     turnRight->setPosition(winSize.width * 0.8, winSize.height * 0.05);
     
-    Label* pauseGame = Label::createWithTTF("Pause", "fonts/Arial.ttf",GAME_CONTROL_FONT_SIZE);
+    Label* scoreLabel = Label::createWithTTF("Score:", "fonts/Arial.ttf",GAME_CONTROL_FONT_SIZE);
+    scoreLabel->setPosition(winSize.width * 0.14, winSize.height * 0.85);
+    this->addChild(scoreLabel);
+
+    /*Label* pauseGame = Label::createWithTTF("Pause", "fonts/Arial.ttf",GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* menuPauseGame = MenuItemLabel::create(pauseGame,CC_CALLBACK_0(GameScene::onPauseGame,this));
 	menuPauseGame->setPosition(winSize.width * 0.2,winSize.height - pauseGame->getContentSize().height);
 
 	Label* resumeGame = Label::createWithTTF("Resume", "fonts/Arial.ttf",GAME_CONTROL_FONT_SIZE);
     MenuItemLabel* menuResumeGame = MenuItemLabel::create(resumeGame,CC_CALLBACK_0(GameScene::onResumeGame,this));
-    menuResumeGame->setPosition(winSize.width * 0.8,winSize.height - resumeGame->getContentSize().height);
+    menuResumeGame->setPosition(winSize.width * 0.8,winSize.height - resumeGame->getContentSize().height);*/
 
-    Menu* menu = Menu::create(moveLeft, moveRight, turnLeft, turnRight,menuPauseGame,menuResumeGame, NULL);
+    Menu* menu = Menu::create(moveLeft, moveRight, turnLeft, turnRight,NULL);
     menu->setPosition(Point::ZERO);
     this->addChild(menu);
+
+
+    scoreValue = Label::createWithTTF("0", "fonts/Arial.ttf",GAME_CONTROL_FONT_SIZE);
+    scoreValue->setPosition(winSize.width * 0.14, winSize.height * 0.75);
+    this->addChild(scoreValue);
+
+    resetGameScore();
 }
 
 void GameScene::onPauseGame() {
@@ -176,15 +187,18 @@ void GameScene::makeChunk()
 
                 float heightratio = ( 0.25 + y * 0.03);
 
-                spriteb->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
-
-                //b->setColor(ColorsUtils::findColors(game->chunk->blocks[row][col]->getColor()));
-
-                spriteb->setTag(number);
-
-                number++;
-
-                this->addChild(spriteb,2);
+                if(spriteb != NULL)
+                {
+                	spriteb->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
+					//b->setColor(ColorsUtils::findColors(game->chunk->blocks[row][col]->getColor()));
+					spriteb->setTag(number);
+					number++;
+                	this->addChild(spriteb,2);
+                }
+                else
+                {
+                	CCLOG("GameScene:: Sprite is null");
+                }
             }
         }
     }
@@ -250,8 +264,13 @@ void GameScene::deleteLines()
                 if (game->field->blocks[i][j] != NULL) {
                     Block* b = game->field->blocks[i][j];
                     int number = b->getNumber();
-                    Label* l = (Label*)this->getChildByTag(number);
+
+                    //Label* l = (Label*)this->getChildByTag(number);
+
+                    Sprite* moveSprite =  (Sprite*) this->getChildByTag(number);
+
                     int x = j - FIELD_WIDTH_LEFT_INDEX;
+
                     int y = (FIELD_HEIGHT - 1) - i;
 
                     float widthratio = (0.30 + x * 0.05);
@@ -259,12 +278,14 @@ void GameScene::deleteLines()
 					float heightratio = ( 0.25 + y * 0.03); // (0.05 + y * 0.03)
 
                     MoveTo* action = MoveTo::create(0.2, Point(winSize.width * widthratio, winSize.height * heightratio));
-                    l->runAction(action);
+
+                    moveSprite->runAction(action);
                 }
             }
         }
 
-
+        //update the score points
+        updateGameScore();
     }
 }
 
@@ -359,5 +380,21 @@ void GameScene::registerEventDispatche(){
 void GameScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event){
 	CCLOG("GameScrene:: onKeyReleased");
 	Director::getInstance()->end();
+}
+
+void GameScene::updateGameScore(){
+	CCLOG("GameScrene:: updateGameScore");
+	UserDefault *def = UserDefault::getInstance();
+	int highScore = def->getIntegerForKey("SCORE", 0);
+	CCLOG("GameScene:: highScore: %d", highScore);
+	def->setIntegerForKey("SCORE", (highScore + 10));
+	auto newScore = def->getIntegerForKey("SCORE", 0);
+	scoreValue->setString(StringUtils::toString(newScore));
+}
+
+void GameScene::resetGameScore(){
+	CCLOG("GameScrene:: resetGameScore");
+	UserDefault *def = UserDefault::getInstance();
+	def->setIntegerForKey("SCORE", 0);
 }
 

@@ -40,6 +40,10 @@ private:
 
     void onResumeGame();
 
+    void updateGameScore();
+
+    void resetGameScore();
+
 public:
     virtual bool init();
     static cocos2d::Scene* scene();
@@ -51,6 +55,8 @@ public:
 
     bool isTouching; // default is false
     int touchPosition;
+
+    cocos2d::Label* scoreValue;
 
     void update(float ft);
 

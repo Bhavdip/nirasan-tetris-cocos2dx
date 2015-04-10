@@ -4,7 +4,7 @@
  *  Created on: Feb 11, 2015
  *      Author: CreoleStudios
  */
-
+#define COCOS2D_DEBUG 1
 #include "ColorsUtils.h"
 
 Color3B ColorsUtils::findColors(int colors) {
@@ -39,6 +39,7 @@ Color3B ColorsUtils::findColors(int colors) {
 }
 
 Sprite* ColorsUtils::findSprite(int colors) {
+	CCLOG("ColorsUtils:: [findSprite]=== %d", colors);
 	switch (colors) {
 	case Block::kColor_blue: {
 		return Sprite::create("sky.png");
