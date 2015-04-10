@@ -20,6 +20,8 @@ private:
     void tapTurnLeft();
     void tapTurnRight();
     
+    void tapMoveBottom();
+
     void startGame();
     
     void makeChunk();
@@ -42,6 +44,10 @@ public:
     virtual bool init();
     static cocos2d::Scene* scene();
     CREATE_FUNC(GameScene);
+
+    void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+
+    void registerEventDispatche();
 
     bool isTouching; // default is false
     int touchPosition;

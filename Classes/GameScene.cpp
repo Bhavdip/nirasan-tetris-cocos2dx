@@ -22,12 +22,11 @@ bool GameScene::init()
     }
     
     Size windowSize = Director::getInstance()->getWinSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
-    Sprite* background = Sprite::create("ic_game_background.png");
-    background->setPosition(Point(windowSize.width / 2, windowSize.height / 2));
+    Sprite* background = Sprite::create("ic_application_background.png");
+    background->setPosition(Point(windowSize.width/2, windowSize.height/2));
     this->addChild(background,-1);
 
-//    setUpTouchEvent();
+    //setUpTouchEvent();
 
     makeField();
     
@@ -35,6 +34,8 @@ bool GameScene::init()
     
     startGame();
     
+    registerEventDispatche();
+
     return true;
 }
 
@@ -138,10 +139,11 @@ void GameScene::makeField()
     Size winSize = Director::getInstance()->getWinSize();
     for (int row = 0; row < FIELD_HEIGHT; row++) {
         for (int col = 0; col <= FIELD_WIDTH_RIGHT_INDEX - FIELD_WIDTH_LEFT_INDEX; col++) {
-        	//Label* b = Label::createWithTTF("□", "fonts/Arial.ttf", 50.0);
         	Sprite* gridcube = Sprite::create("ic_grid_cube.png");
-        	gridcube->setPosition(Point(winSize.width * (0.30 + col * 0.05), winSize.height * (0.05 + row * 0.03)));
-			//b->setColor(Color3B(128, 128, 128));
+        	float widthratio = (0.30 + col * 0.05);
+        	float heightratio = ( 0.25 + row * 0.03);
+        	CCLOG("GameScene:: widthratio[%d]: %f , heightratio[%d]: %f", widthratio, heightratio);
+        	gridcube->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
             this->addChild(gridcube);
         }
     }
@@ -159,14 +161,27 @@ void GameScene::makeChunk()
     for (int row = 0; row < CHUNK_HEIGHT; row++) {
         for (int col = 0; col < CHUNK_WIDTH; col++) {
             if (game->chunk->blocks[row][col] != NULL) {
+
             	Label* b = Label::createWithTTF("■", "fonts/Arial.ttf", 50.0);
+
                 int x = CHUNK_START_X - FIELD_WIDTH_LEFT_INDEX + col;
+
                 int y = (FIELD_HEIGHT - 1) - (CHUNK_START_Y + row);
+
                 CCLOG("GameScene:: [makeChunk]=== x:%d y:%d", x, y);
-                b->setPosition(Point(winSize.width * (0.30 + x * 0.05), winSize.height * (0.05 + y * 0.03)));
+
+                float widthratio = (0.30 + x * 0.05);
+
+                float heightratio = ( 0.25 + y * 0.03);
+
+                b->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
+
                 b->setColor(ColorsUtils::findColors(game->chunk->blocks[row][col]->getColor()));
+
                 b->setTag(number);
+
                 number++;
+
                 this->addChild(b);
             }
         }
@@ -188,7 +203,13 @@ void GameScene::moveChunk()
                 int x = game->chunk->posX - FIELD_WIDTH_LEFT_INDEX + col;
                 CCLOG("game->chunk->posX : %d", game->chunk->posX);
                 int y = (FIELD_HEIGHT - 1) - (game->chunk->posY + row);
-                l->setPosition(Point(winSize.width * (0.30 + x *  0.05), winSize.height * (0.05 + y * 0.03)));
+
+                float widthratio = (0.30 + x * 0.05);
+
+                float heightratio = ( 0.25 + y * 0.03); // (0.05 + y * 0.03)
+
+                l->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
+
                 CCLOG("GameScene :: [showChunk]=== x:%d y:%d", x, y);
             }
         }
@@ -228,7 +249,12 @@ void GameScene::deleteLines()
                     Label* l = (Label*)this->getChildByTag(number);
                     int x = j - FIELD_WIDTH_LEFT_INDEX;
                     int y = (FIELD_HEIGHT - 1) - i;
-                    MoveTo* action = MoveTo::create(0.2, Point(winSize.width * (0.30 + x * 0.05), winSize.height * (0.05 + y * 0.03)));
+
+                    float widthratio = (0.30 + x * 0.05);
+
+					float heightratio = ( 0.25 + y * 0.03); // (0.05 + y * 0.03)
+
+                    MoveTo* action = MoveTo::create(0.2, Point(winSize.width * widthratio, winSize.height * heightratio));
                     l->runAction(action);
                 }
             }
@@ -319,3 +345,15 @@ void GameScene::onTouchEnd(Touch *touch,Event* event){
 void GameScene::onTouchCancelled(Touch *touch,Event* event){
 	CCLOG("GameScene :: onTouchCancelled");
 }
+
+void GameScene::registerEventDispatche(){
+	auto eventCallback = EventListenerKeyboard::create();
+	eventCallback->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventCallback,this);
+}
+
+void GameScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event){
+	CCLOG("GameScrene:: onKeyReleased");
+	Director::getInstance()->end();
+}
+
