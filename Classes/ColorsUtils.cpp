@@ -36,5 +36,33 @@ Color3B ColorsUtils::findColors(int colors) {
 	}
 
 	}
+}
 
+Sprite* ColorsUtils::findSprite(int colors) {
+	switch (colors) {
+	case Block::kColor_blue: {
+		return Sprite::create("sky.png");
+		break;
+	}
+	case Block::kColor_dark_blue: {
+		return Sprite::create("blue.png");
+		break;
+	}
+	case Block::kColor_yellow: {
+		return Sprite::create("yellow.png");
+		break;
+	}
+	case Block::kColor_dark_yellow: {
+		return Sprite::create("orange.png");
+		break;
+	}
+	case Block::kColor_green: {
+		return Sprite::create("green.png");
+		break;
+	}
+	case Block::kColor_red: {
+		return Sprite::create("red.png");
+		break;
+	}
+	}
 }

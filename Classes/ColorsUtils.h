@@ -17,6 +17,7 @@ class ColorsUtils {
 public:
 
 	static Color3B findColors(int colors);
+	static Sprite* findSprite(int colors);
 };
 
 #endif /* COLORSUTILS_H_ */

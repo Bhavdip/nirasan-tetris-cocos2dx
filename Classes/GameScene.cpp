@@ -162,7 +162,9 @@ void GameScene::makeChunk()
         for (int col = 0; col < CHUNK_WIDTH; col++) {
             if (game->chunk->blocks[row][col] != NULL) {
 
-            	Label* b = Label::createWithTTF("■", "fonts/Arial.ttf", 50.0);
+            	//Label* b = Label::createWithTTF("■", "fonts/Arial.ttf", 50.0);
+
+            	Sprite* spriteb = ColorsUtils::findSprite(game->chunk->blocks[row][col]->getColor());
 
                 int x = CHUNK_START_X - FIELD_WIDTH_LEFT_INDEX + col;
 
@@ -174,15 +176,15 @@ void GameScene::makeChunk()
 
                 float heightratio = ( 0.25 + y * 0.03);
 
-                b->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
+                spriteb->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
 
-                b->setColor(ColorsUtils::findColors(game->chunk->blocks[row][col]->getColor()));
+                //b->setColor(ColorsUtils::findColors(game->chunk->blocks[row][col]->getColor()));
 
-                b->setTag(number);
+                spriteb->setTag(number);
 
                 number++;
 
-                this->addChild(b);
+                this->addChild(spriteb,2);
             }
         }
     }
@@ -199,7 +201,9 @@ void GameScene::moveChunk()
             if (game->chunk->blocks[row][col] != NULL) {
                 Block* b = game->chunk->blocks[row][col];
                 int number = b->getNumber();
-                Label* l = (Label*)this->getChildByTag(number);
+                //Label* l = (Label*)this->getChildByTag(number);
+                Sprite* moveSprite =  (Sprite*) this->getChildByTag(number);
+
                 int x = game->chunk->posX - FIELD_WIDTH_LEFT_INDEX + col;
                 CCLOG("game->chunk->posX : %d", game->chunk->posX);
                 int y = (FIELD_HEIGHT - 1) - (game->chunk->posY + row);
@@ -208,7 +212,7 @@ void GameScene::moveChunk()
 
                 float heightratio = ( 0.25 + y * 0.03); // (0.05 + y * 0.03)
 
-                l->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
+                moveSprite->setPosition(Point(winSize.width * widthratio, winSize.height * heightratio));
 
                 CCLOG("GameScene :: [showChunk]=== x:%d y:%d", x, y);
             }
